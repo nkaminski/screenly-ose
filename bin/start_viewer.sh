@@ -34,7 +34,8 @@ trap '' 16
 
 sudo -E -u viewer dbus-run-session python viewer.py &
 
-# Waiting for the viewer
+
+# Wait for the viewer
 while true; do
   PID=$(pidof python)
   if [ "$?" == '0' ]; then
@@ -43,7 +44,10 @@ while true; do
   sleep 0.5
 done
 
-# Exit when the viewer falls
+# If the viewer runs OOM, force the OOM killer to kill this script so the container restarts
+echo 1000 > /proc/$$/oom_score_adj
+
+# Exit when the viewer stops
 while kill -0 "$PID"; do
   sleep 1
 done
